@@ -19,7 +19,7 @@ from distributor import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/products/', views.product_list_view),
+    # path('api/v1/products/', views.product_list_view),
     path('api/v2/products/', views.product_rest_list_view),
     path('api/v1/product/<int:id>/', views.product_item)
 ]
