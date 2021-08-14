@@ -39,8 +39,8 @@ from .serializers import ProductSerializer
 def product_rest_list_view(request):
     return Response(data=ProductSerializer(Product.objects.all(), many=True).data)
 
-@api_view(['GET', 'POST'])
-def product_item(request):
-    products = Product.objects.all(id=id)
-    data = ProductSerializer(products, many=True).data
+@api_view(['GET'])
+def product_item(request, id):
+    products = Product.objects.get(id=id)
+    data = ProductSerializer(products, many=False).data
     return Response(data=data)
