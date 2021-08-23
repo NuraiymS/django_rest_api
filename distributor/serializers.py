@@ -4,7 +4,7 @@ from .models import Product, Category, Tag
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # tags = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = 'title category price description tags'.split()
