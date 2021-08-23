@@ -9,8 +9,8 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = 'title category price description tags'.split()
 
-    # def get_tags(self, product):
-    #     return [i.name for i in product.tags.all()]
+    def get_tags(self, product):
+        return [i.name for i in product.tags.all()]
 
     # def get_tags(self, product):
     #     l = []
