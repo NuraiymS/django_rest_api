@@ -41,7 +41,7 @@ def product_rest_list_view(request):
     return Response(data=ProductSerializer(Product.objects.all(), many=True).data)
 
 @api_view(['GET'])
-<<<<<<< HEAD
+
 def product_item(request,id):
     products = Product.objects.get(id=id)
     data = ProductSerializer(products, many=False).data
@@ -58,9 +58,5 @@ def categories_id(request, id):
     categories =Category.objects.get(id=id)
     data = CategorySerializer(categories).data
     return Response(data=data)
-=======
-def product_item(request, id):
-    products = Product.objects.get(id=id)
-    data = ProductSerializer(products, many=False).data
-    return Response(data=data)
->>>>>>> origin/master
+
+
