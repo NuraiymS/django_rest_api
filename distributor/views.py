@@ -1,3 +1,4 @@
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework.response import Response
@@ -26,7 +27,7 @@ from .models import Category, Tag, Product
 
 
 from rest_framework.decorators import api_view
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, CategorySerializer
 
 
 # @api_view(['GET', 'POST'])
@@ -45,3 +46,14 @@ def product_item(request,id):
     data = ProductSerializer(products, many=False).data
     return Response(data=data)
 
+@api_view(['GET', 'POST'])
+def categories_list(request):
+    categories = Category.objects.all()
+    data = CategorySerializer(categories, many=True).data
+    return Response(data=data)
+
+@api_view(['GET'])
+def categories_id(request, id):
+    categories =Category.objects.get(id=id)
+    data = CategorySerializer(categories).data
+    return Response(data=data)
