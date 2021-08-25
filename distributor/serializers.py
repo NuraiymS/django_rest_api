@@ -4,13 +4,13 @@ from .models import Product, Category, Tag
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    # tags = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = 'title category price description tags'.split()
 
-    # def get_tags(self, product):
-    #     return [i.name for i in product.tags.all()]
+    def get_tags(self, product):
+        return [i.name for i in product.tags.all()]
 
     # def get_tags(self, product):
     #     l = []
