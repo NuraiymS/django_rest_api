@@ -49,9 +49,9 @@ def product_rest_list_view(request):
         product = Product.objects.create(
             title=title, description=description, price=price,
              category_id=category_id)
-        tag = request.data['tag']
+        tags = request.data['tags']
         for i in tag:
-            product.tag.add(i)
+            product.tags.add(i)
         product.save()
 
         return Response(data={'message': 'OK',
@@ -70,7 +70,7 @@ def product_item(request,id):
         products.description = request.data['description']
         products.price = request.data['price']
         products.category_id = request.data['category_id']
-        for i in request.data['tag']:
+        for i in request.data['tags']:
             products.tags.add(i)
         products.save()
     data = ProductSerializer(products, many=False).data
