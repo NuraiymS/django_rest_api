@@ -28,7 +28,7 @@ from .models import Category, Tag, Product
 
 
 from rest_framework.decorators import api_view
-from .serializers import ProductSerializer, CategorySerializer
+from .serializers import ProductSerializer, CategorySerializer, ProductCreateSerializer, ProductUpdateSerializer
 
 
 # @api_view(['GET', 'POST'])
@@ -42,6 +42,14 @@ def product_rest_list_view(request):
     if request.method == "GET":
         return Response(data=ProductSerializer(Product.objects.all(), many=True).data)
     elif request.method == "POST":
+        serializer = ProductCreateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                data={
+                    'message': 'error',
+                    'errors': serializer.errors
+                }
+            )
         title = request.data['title']
         description = request.data['description']
         price = request.data['price']
@@ -50,10 +58,9 @@ def product_rest_list_view(request):
             title=title, description=description, price=price,
              category_id=category_id)
         tags = request.data['tags']
-        for i in tag:
+        for i in tags:
             product.tags.add(i)
         product.save()
-
         return Response(data={'message': 'OK',
                               'product': ProductSerializer(product).data})
 
@@ -66,10 +73,19 @@ def product_item(request,id):
         return Response(data={'message': 'Takogo producta net'},
                         status=status.HTTP_404_NOT_FOUND)
     if request.method == 'PUT':
+        serializer = ProductUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                data={
+                    'message': 'error',
+                    'errors': serializer.errors
+                }
+            )
         products.title = request.data['title']
         products.description = request.data['description']
         products.price = request.data['price']
         products.category_id = request.data['category_id']
+        products.tags.clear()
         for i in request.data['tags']:
             products.tags.add(i)
         products.save()
