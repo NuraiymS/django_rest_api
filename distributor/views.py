@@ -2,6 +2,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Category, Tag, Product
@@ -27,8 +29,9 @@ from .models import Category, Tag, Product
 #     return JsonResponse(data=data, safe=False)
 
 
-from rest_framework.decorators import api_view
-from .serializers import ProductSerializer, CategorySerializer, ProductCreateSerializer, ProductUpdateSerializer
+from rest_framework.decorators import api_view, permission_classes
+from .serializers import ProductSerializer, CategorySerializer, ProductCreateSerializer, ProductUpdateSerializer, \
+    LoginValidateSerializer
 
 
 # @api_view(['GET', 'POST'])
@@ -38,8 +41,10 @@ from .serializers import ProductSerializer, CategorySerializer, ProductCreateSer
 #     return Response(data=data)
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def product_rest_list_view(request):
     if request.method == "GET":
+        print(request.user)
         return Response(data=ProductSerializer(Product.objects.all(), many=True).data)
     elif request.method == "POST":
         serializer = ProductCreateSerializer(data=request.data)
@@ -111,4 +116,41 @@ def test(request):
     title = request.data.get('title', 'Mango')
     Product.objects.create(title=title)
     return Response(data={'massage': 'received'})
+
+from django.contrib import auth
+@api_view(['POST'])
+def login(request):
+    if request.method == 'POST':
+        serializer = LoginValidateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                data={
+                    'message': 'error',
+                    'errors': serializer.errors
+                },
+                status=status.HTTP_406_NOT_ACCEPTABLE
+            )
+        print(serializer.validated_data)
+        user = auth.authenticate(**serializer.validated_data)
+        if user:
+            try:
+                token = Token.objects.get(user=user)
+                print('GET TOKEN')
+            except Token.DoesNotExist:
+                print('CREATE TOKEN')
+                token = Token.objects.create(user=user)
+            return Response(data={'key': token.key})
+        else:
+            return Response(
+                data={'message': 'User not found!!!'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+            # Token.objects.filter(user=user).delete()   - ЭТОТ ИСПОЛЬЗУЕМ TOKEN ЕСЛИ НУЖЕН 1 ПОЛЬЗОВАТЕЛЬ - ОДНО ПРИЛОЖЕНИЕ
+            # token = Token.objects.create(user=user)
+            # return Response(data={'key': token.key})
+
+
+
 
